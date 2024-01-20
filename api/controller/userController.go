@@ -3,7 +3,6 @@ package controller
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -58,7 +57,6 @@ func Login(c *gin.Context){
   }
 
   userFromDb := database.DB.Get(ctx, body.Login).Val()
-  fmt.Println(userFromDb)
 
   if userFromDb == "" {
     c.JSON(http.StatusBadRequest, gin.H{"error":"User with this login does not exist!"})
