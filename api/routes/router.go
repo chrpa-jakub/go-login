@@ -6,7 +6,7 @@ import (
 )
 
 func Run(){
-  r := gin.Default()
+  r := gin.New()
 
   r.POST("/api/register", controller.Register)
   r.POST("/api/login", controller.Login)
