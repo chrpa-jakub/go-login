@@ -1,17 +1,17 @@
 package controller
 
 import (
-	"context"
-	"encoding/json"
-	"net/http"
-	"os"
-	"time"
+  "context"
+  "encoding/json"
+  "net/http"
+  "os"
+  "time"
 
-	"github.com/chrpa-jakub/register-api/database"
-	"github.com/chrpa-jakub/register-api/model"
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
-	"golang.org/x/crypto/bcrypt"
+  "github.com/chrpa-jakub/register-api/database"
+  "github.com/chrpa-jakub/register-api/model"
+  "github.com/gin-gonic/gin"
+  "github.com/golang-jwt/jwt"
+  "golang.org/x/crypto/bcrypt"
 )
 var body struct {
   Login string `json:"login"`
@@ -23,24 +23,33 @@ var ctx = context.Background()
 func Register(c *gin.Context){
 
   if c.BindJSON(&body) != nil {
-    c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve body."})
+    c.JSON(http.StatusBadRequest, gin.H{
+      "error": "Failed to retrieve body.",
+    })
     return
   }
 
   if database.DB.Exists(ctx, body.Login).Val() != 0 {
 
-    c.JSON(http.StatusBadRequest, gin.H{"error": "User with this login already exists!"})
+    c.JSON(http.StatusBadRequest, gin.H{
+      "error": "User with this login already exists!",
+    })
     return
   }
 
   hashedPassword, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
 
   if err != nil {
-    c.JSON(http.StatusBadRequest, gin.H{"error":"Failed to hash password."})
+    c.JSON(http.StatusBadRequest, gin.H{
+      "error":"Failed to hash password.",
+    })
     return
   }
 
-  user := model.User{Login: body.Login, PasswordHash: string(hashedPassword)}
+  user := model.User{
+    Login: body.Login,
+    PasswordHash: string(hashedPassword),
+  }
   userJson, _ := json.Marshal(user)
 
   database.DB.Set(ctx, user.Login, userJson, 0)
@@ -52,14 +61,18 @@ func Register(c *gin.Context){
 
 func Login(c *gin.Context){
   if c.BindJSON(&body) != nil {
-    c.JSON(http.StatusBadRequest, gin.H{"error":"Failed to retreive body."})
+    c.JSON(http.StatusBadRequest, gin.H{
+      "error":"Failed to retreive body.",
+    })
     return
   }
 
   userFromDb := database.DB.Get(ctx, body.Login).Val()
 
   if userFromDb == "" {
-    c.JSON(http.StatusBadRequest, gin.H{"error":"User with this login does not exist!"})
+    c.JSON(http.StatusBadRequest, gin.H{
+      "error":"User with this login does not exist!",
+    })
     return
   }
 
@@ -68,7 +81,9 @@ func Login(c *gin.Context){
 
   cmp := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(body.Password))  
   if cmp != nil {
-    c.JSON(http.StatusBadRequest, gin.H{"error":"Passwords do not match!"})
+    c.JSON(http.StatusBadRequest, gin.H{
+      "error":"Passwords do not match!",
+    })
     return
   }
 
@@ -79,7 +94,8 @@ func Login(c *gin.Context){
 
 
 func createJwt(user model.User) (tokenString string) {
-  token := jwt.NewWithClaims(jwt.SigningMethodHS256,
+  token := jwt.NewWithClaims(
+  jwt.SigningMethodHS256,
   jwt.MapClaims{
     "usr" : user.Login,
     "exp" : time.Now().Add(time.Hour*24*30).Unix(),

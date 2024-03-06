@@ -3,6 +3,6 @@ import "github.com/chrpa-jakub/register-api/routes"
 import "github.com/chrpa-jakub/register-api/database"
 
 func main() {
- database.Init()
- routes.Init()
+  database.Run()
+  routes.Run()  
 }

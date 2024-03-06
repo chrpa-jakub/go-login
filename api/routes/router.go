@@ -5,8 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Init(){
+func Run(){
   r := gin.Default()
+
   r.POST("/api/register", controller.Register)
   r.POST("/api/login", controller.Login)
 

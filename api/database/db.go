@@ -9,7 +9,7 @@ import (
 
 var DB *redis.Client
 
-func Init() {
+func Run() {
   conn, err := redis.ParseURL(os.Getenv("DB_CONN"))
 
 	if err != nil {
